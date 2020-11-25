@@ -14,6 +14,8 @@ app.get('/' , function(req , res){
 
 });
 
+process.env.DB_HOST = "192.168.10.150"
+
 // connect to database
 if(process.env.DB_HOST) {
   mongoose.connect(process.env.DB_HOST);
