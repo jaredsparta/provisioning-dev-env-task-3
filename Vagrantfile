@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     app.vm.provision "shell", path: "environment/app/provision.sh", privileged: false
   end
 
-  config.vm.define "db" do |db|
+  config.vm.define "db", autostart: false do |db|
     db.vm.box = "ubuntu/bionic64"
     db.vm.network "private_network", ip: "192.168.10.101"
     db.vm.provision "shell", path: "environment/app/provision_db.sh", privileged: false
