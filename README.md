@@ -67,6 +67,8 @@ sudo cp -f mongod-copy.conf /etc/mongod.conf
 
 - To run the VM, all one would need to then do is navigate to the root of this directory (the level that contains the Vagrantfile) and then `vagrant up`. This will automatically start both VM's.
 
+- To see the app, navigate to the url `development.local:3000`.
+
 <br>
 
 ---
