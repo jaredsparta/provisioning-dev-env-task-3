@@ -70,6 +70,11 @@ sudo cp -f mongod-copy.conf /etc/mongod.conf
 
 - To see the app, navigate to the url `development.local:3000`.
 
+- If you want to see the app page, the instructions are below:
+    1. `vagrant ssh app` into the machine
+    2. `cd /home/ubuntu/app` to navigate to the app directory
+    3. `npm start` to start properly
+
 <br>
 
 ---
