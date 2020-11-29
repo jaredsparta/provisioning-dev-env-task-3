@@ -1,51 +1,23 @@
 # Multi-machine Vagrant
 
-## Summary
+- We have created two VM's -- one for a database and another for the node app.
 
-The sample application has the ability to connect to a database. We need to provision our development environment with a vm for the database and one for the database.
+- We now want to be able to create both and run both with just a single use of `vagrant up`.
 
-Vagrant is capable of running two or more virtual machines at once with different configurations.
+- Further, we want to be able to connect the app with the database to allow us to see the `posts` page
 
-## Tasks
-
-* Research how to create a multi machine vagrant environment
-* Add a second virtual machine called "db" to your Vagrant file
-* Configure the db machine with a different IP from the app
-* Provision the db machine with a MongoDB database
-
-
-## Notes
-When you have the second machine running further configuration of the app is required to make it use the database. We will cover this in the next lesson.
-
-You can test your database is working correctly by running the test suite in the test folder. There are two sets of tests. One for the app VM and one for the db VM. Make them all pass.
-```
-cd test
-rake spec
-```
-## Acceptance Criteria
-* Uses vagrant file
-* Create 2 VM APP and Mongod
-* Localhost set to development.local
-* App works on Port 3000 (development.local:3000)
-* Work with only command "vagrant up" &/or mininum commands
-* All tests passing
-* works on /posts
-* works on /fibonacci/30
-* Documentation exists as README.md file
-* Documentation includes: Intro (purpose of repo), Pre Requisits  and Intructions
-* Instructions have a clear step by step
-* repo exists on github
-
-<br>
-<br>
 <br>
 
 # Pre-requisites
 - Install `Oracle Virtual Box` [here](https://www.virtualbox.org/wiki/Downloads). This is the software that allows us to create virtual machines (VM).
 
-- One will need `Vagrant` installed, find it [here](https://www.vagrantup.com/downloads.html). We use Vagrant to manage our virtual machines in Oracle VM.
+- Install `Vagrant` [here](https://www.vagrantup.com/downloads.html). We use Vagrant to manage our virtual machines in Oracle VM.
 
-- Once `Vagrant` is installed, you need the `vagrant-hostsupdater` plugin. Run `vagrant plugin install vagrant-hostsupdater` to install it. For knowledge, `vagrant plugin uninstall vagrant-hostsupdater` will uninstall this.
+- Once `Vagrant` is installed, you need the `vagrant-hostsupdater` plugin. 
+> Run `vagrant plugin install vagrant-hostsupdater` to install it
+
+> Run `vagrant plugin uninstall vagrant-hostsupdater` to uninstall it
+
 > There may be be some problems with this plugin, if you do encounter some just uninstall and then re-install
 
 - One will also need `Ruby` installed, find it [here](https://www.ruby-lang.org/en/downloads/). 
@@ -56,24 +28,36 @@ rake spec
 
 - To see the tests that we need to pass, go into a terminal and navigate to the directory where you have this repo. Then `cd tests` and run `rake spec`
 
-- To automate the installation of MongoDB into our VM we can make use of a bash script. This can be found in `environment/app/provision.sh` and in `environment/app/provision_db.sh`.
+<br>
+
+- To automate the installation of MongoDB into our VM we can make use of a bash script. This can be found in `environment/db/provision.sh` and in `environment/app/provision_db.sh`.
 > Bash scripts have the extension `.sh`
 
-- To automatically make MongoDB listen on `0.0.0.0:27017`, we create a `mongod-copy.conf` file in `config-files` and sync this folder with the VM. Within this copy, we change the `port` and `bindip` values. We then use bash commands in `provision.sh` to replace the `mongod.conf` file in `/etc` to this one. The second line allows one to replace the contents of the file without renaming it.
+<br>
+
+- Since we want the database to listen to `0.0.0.0:27017` we must change the configuration file found in `/etc/mongod.conf`. We can do this through our provision file
+> The command we add is `sudo sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/' /etc/mongod.conf`
+
+<br>
+
+- We now need to configure the app's provision file to allow it to connect to the database, which is now listening in all ports (`0.0.0.0`). To do so we must add commands to create a new environment variable called `DB_HOST`. We add the following lines inside `environment/app/provision.sh`:
 ```bash
-cd /folder1 
-sudo cp -f mongod-copy.conf /etc/mongod.conf
+# creates an environment variable
+export DB_HOST=192.168.10.200
+
+# these two lines will input the environment variable into the bashrc file
+# the bashrc file runs everytime we start a terminal which in this case means we ssh into the VM
+echo "export DB_HOST=192.168.10.200" >> ~/.bashrc
+source ~/.bashrc
 ```
 
-- To run the VM, all one would need to then do is navigate to the root of this directory (the level that contains the Vagrantfile) and then `vagrant up`. This will automatically start both VM's.
-> If it does not work, try to `vagrant up db` and then `vagrant up app` separately.
+<br>
 
-- To see the app, navigate to the url `development.local:3000`.
+- Finally, both VM's are now configured as necessary and all we need to do now is `vagrant up`
 
-- If you want to see the app page, the instructions are below:
-    1. `vagrant ssh app` into the machine
-    2. `cd /home/ubuntu/app` to navigate to the app directory
-    3. `npm start` to start properly
+<br>
+
+- To see the app, navigate to the url `development.local:3000`. We can also view the posts page in `development.local:3000/posts`
 
 <br>
 

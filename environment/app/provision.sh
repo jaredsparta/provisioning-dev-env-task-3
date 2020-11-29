@@ -13,15 +13,19 @@ sudo apt-get install nodejs -y
 # install pm2
 sudo npm install pm2 -g
 
-sudo apt-get install nginx -y
+# creates an environment variable
+export DB_HOST=192.168.10.200
 
-# finally, restart the nginx service so the new config takes hold
-sudo service nginx restart
-
+# these two lines will input the environment variable into the bashrc file
+# the bashrc file runs everytime we start a terminal which in this case means we ssh into the VM
 echo "export DB_HOST=192.168.10.200" >> ~/.bashrc
-
 source ~/.bashrc
 
-cd /home/ubuntu/app
+# this installs nginx
+sudo apt-get install nginx -y
+sudo systemctl restart nginx
 
-sudo pm2 start app.js --update-env
+# we cd into the app directory and start it
+# we use & to start it in the background
+cd /home/ubuntu/app
+npm start &
